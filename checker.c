@@ -31,42 +31,40 @@ Write your code in this editor and press "Run" button to compile and execute it.
 *******************************************************************************/
 
 
-#include"stdio.h"
-#include"assert.h"
+#include <stdio.h>
+#include <stdbool.h>
+#include <assert.h>
 
-int isTemperatureOk(float temperature) {
-    if (temperature < 0 || temperature > 45) {
-        printf("Temperature out of range!\n");
-        return 0;
-    }
-    return 1;
+bool check_temp_limit(float temperature) {
+  if (temperature < 0 || temperature > 45) {
+    printf("Temperature is out of range!\n");
+    return false;
+  }
+  return true;
 }
 
-int isSocOk(float soc) {
-    if (soc < 20 || soc > 80) {
-        printf("State of Charge out of range!\n");
-        return 0;
-    }
-    return 1;
+bool check_soc_limit(float soc) {
+  if (soc < 20 || soc > 80) {
+    printf("State of Charge is out of range!\n");
+    return false;
+  }
+  return true;
 }
 
-int isChargeRateOk(float chargeRate) {
-    if (chargeRate > 0.8) {
-        printf("Charge Rate out of range!\n");
-        return 0;
-    }
-    return 1;
+bool check_charge_rate_limit(float charge_rate) {
+  if (charge_rate > 0.8) {
+    printf("Charge rate is out of range!\n");
+    return false;
+  }
+  return true;
 }
 
-int batteryIsOk(float temperature, float soc, float chargeRate) {
-    return isTemperatureOk(temperature) && isSocOk(soc) && isChargeRateOk(chargeRate);
+bool battery_is_ok(float temperature, float soc, float charge_rate) {
+  return check_temp_limit(temperature) && check_soc_limit(soc) && check_charge_rate_limit(charge_rate);
 }
 
 int main() {
-    assert(batteryIsOk(25, 70, 0.7));
-    assert(!batteryIsOk(50, 85, 0));
-    
-    printf("All tests completed.\n");
-    return 0;
+  assert(battery_is_ok(25, 70, 0.7) == true);
+  assert(battery_is_ok(50, 85, 0) == false);
+  return 0;
 }
-
