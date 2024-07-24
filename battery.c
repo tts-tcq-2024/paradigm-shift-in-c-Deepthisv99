@@ -29,43 +29,60 @@ Write your code in this editor and press "Run" button to compile and execute it.
 Write your code in this editor and press "Run" button to compile and execute it.
 
 *******************************************************************************/
-#include"stdio.h"
-#include"assert.h"
+#include <stdio.h>
+#include "battery.h"
 
-int isTemperatureOk(float temperature) {
-    if (temperature < 0 || temperature > 45) {
-        printf("Temperature out of range!\n");
-        return 0;
+BreachType checkRange(float value, float low, float high) {
+    if (value < low) {
+        return TOO_LOW;
     }
-    return 1;
+    if (value > high) {
+        return TOO_HIGH;
+    }
+    return NORMAL;
 }
 
-int isSocOk(float soc) {
-    if (soc < 20 || soc > 80) {
-        printf("State of Charge out of range!\n");
-        return 0;
-    }
-    return 1;
+BreachType isTemperatureOk(float temperature) {
+    return checkRange(temperature, 0, 45);
 }
 
-int isChargeRateOk(float chargeRate) {
-    if (chargeRate > 0.8) {
-        printf("Charge Rate out of range!\n");
-        return 0;
+BreachType isSocOk(float soc) {
+    return checkRange(soc, 20, 80);
+}
+
+BreachType isChargeRateOk(float chargeRate) {
+    return checkRange(chargeRate, 0, 0.8);
+}
+
+void printBreachType(const char* parameter, BreachType breach) {
+    switch (breach) {
+        case TOO_LOW:
+            printf("%s too low!\n", parameter);
+            break;
+        case TOO_HIGH:
+            printf("%s too high!\n", parameter);
+            break;
+        case NORMAL:
+            break;
     }
-    return 1;
 }
 
 int batteryIsOk(float temperature, float soc, float chargeRate) {
-    return isTemperatureOk(temperature) && isSocOk(soc) && isChargeRateOk(chargeRate);
+    BreachType temperatureStatus = isTemperatureOk(temperature);
+    BreachType socStatus = isSocOk(soc);
+    BreachType chargeRateStatus = isChargeRateOk(chargeRate);
+
+    int isOk = (temperatureStatus == NORMAL) && (socStatus == NORMAL) && (chargeRateStatus == NORMAL);
+
+    if (temperatureStatus != NORMAL) {
+        printBreachType("Temperature", temperatureStatus);
+    }
+    if (socStatus != NORMAL) {
+        printBreachType("State of Charge", socStatus);
+    }
+    if (chargeRateStatus != NORMAL) {
+        printBreachType("Charge Rate", chargeRateStatus);
+    }
+
+    return isOk;
 }
-
-int main() {
-    assert(batteryIsOk(25, 70, 0.7));
-    assert(!batteryIsOk(50, 85, 0));
-    printf("All tests completed.\n");
-    return 0;
-}
-
-
-  
